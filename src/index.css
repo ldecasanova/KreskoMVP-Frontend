@@ -1,0 +1,8 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Estilo adicional para personalizar */
+body {
+  font-family: 'Inter', sans-serif;
+}
