@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { CircularProgress, Box, Typography } from "@mui/material";
 
 const Loading: React.FC = () => {
   const navigate = useNavigate();
@@ -7,14 +8,18 @@ const Loading: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate("/dashboard");
-    }, 3000); // Simula 3 segundos de carga
+    }, 3000); // Simula un tiempo de carga de 3 segundos
+
     return () => clearTimeout(timer);
   }, [navigate]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-    </div>
+    <Box className="flex flex-col justify-center items-center h-screen w-screen bg-gray-50">
+      <CircularProgress color="primary" size={60} />
+      <Typography variant="h6" className="mt-4">
+        Cargando datos...
+      </Typography>
+    </Box>
   );
 };
 
