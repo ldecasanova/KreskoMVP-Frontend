@@ -1,30 +1,39 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TextField, Button, Box, Typography, Paper } from "@mui/material";
-import { register } from "../services/authService"; // Importar el servicio
+import { register } from "../services/authService"; // Importamos el servicio de autenticación
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({
+  const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
     phone: "",
   });
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     try {
-      const response = await register(form.username, form.email, form.password, form.phone);
-      localStorage.setItem("userId", response.data.userId); // Guardar ID del usuario para verificar código
-      alert("Registro exitoso. Verifica tu teléfono.");
-      navigate("/emailsform"); // Redirige a la siguiente pantalla
-    } catch (error) {
-      alert("Error al registrarse.");
+      const response = await register(
+        formData.username,
+        formData.email,
+        formData.password,
+        formData.phone
+      );
+
+      if (response.status === 201) {
+        // Redirige a la página de verificación de email
+        navigate("/emailsform");
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Error al registrarse.");
     }
   };
 
@@ -35,10 +44,46 @@ const Register: React.FC = () => {
           Registro
         </Typography>
         <form onSubmit={handleRegister} className="flex flex-col gap-4">
-          <TextField label="Usuario" name="username" variant="outlined" fullWidth required onChange={handleChange} />
-          <TextField label="Correo" name="email" variant="outlined" fullWidth required onChange={handleChange} />
-          <TextField label="Contraseña" name="password" type="password" variant="outlined" fullWidth required onChange={handleChange} />
-          <TextField label="Número de teléfono" name="phone" variant="outlined" fullWidth required onChange={handleChange} />
+          <TextField
+            label="Nombre de Usuario"
+            name="username"
+            variant="outlined"
+            fullWidth
+            required
+            value={formData.username}
+            onChange={handleChange}
+          />
+          <TextField
+            label="Correo"
+            name="email"
+            variant="outlined"
+            fullWidth
+            required
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+          <TextField
+            label="Contraseña"
+            name="password"
+            type="password"
+            variant="outlined"
+            fullWidth
+            required
+            value={formData.password}
+            onChange={handleChange}
+          />
+          <TextField
+            label="Número de Teléfono"
+            name="phone"
+            type="tel"
+            variant="outlined"
+            fullWidth
+            required
+            value={formData.phone}
+            onChange={handleChange}
+          />
+          {error && <Typography color="error">{error}</Typography>}
           <Button variant="contained" color="primary" type="submit" fullWidth>
             Registrarse
           </Button>
