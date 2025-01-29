@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TextField, Button, Box, Typography, Paper, IconButton } from "@mui/material";
 import { AddCircleOutline } from "@mui/icons-material";
+import { addBankEmail } from "../services/authService"; // Importar servicio
 
 const EmailsForm: React.FC = () => {
   const [emails, setEmails] = useState([{ email: "", password: "" }]);
@@ -17,9 +18,17 @@ const EmailsForm: React.FC = () => {
     setEmails(updatedEmails);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/loading");
+    try {
+      for (const email of emails) {
+        await addBankEmail(email.email, email.password);
+      }
+      alert("Correos agregados correctamente.");
+      navigate("/loading");
+    } catch (error) {
+      alert("No se pudo agregar los correos bancarios.");
+    }
   };
 
   return (

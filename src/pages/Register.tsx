@@ -1,13 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TextField, Button, Box, Typography, Paper } from "@mui/material";
+import { register } from "../services/authService"; // Importar el servicio
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    phone: "",
+  });
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/emails-form");
+    try {
+      const response = await register(form.username, form.email, form.password, form.phone);
+      localStorage.setItem("userId", response.data.userId); // Guardar ID del usuario para verificar código
+      alert("Registro exitoso. Verifica tu teléfono.");
+      navigate("/emailsform"); // Redirige a la siguiente pantalla
+    } catch (error) {
+      alert("Error al registrarse.");
+    }
   };
 
   return (
@@ -17,14 +35,10 @@ const Register: React.FC = () => {
           Registro
         </Typography>
         <form onSubmit={handleRegister} className="flex flex-col gap-4">
-          <TextField label="Correo" variant="outlined" fullWidth required />
-          <TextField
-            label="Contraseña"
-            type="password"
-            variant="outlined"
-            fullWidth
-            required
-          />
+          <TextField label="Usuario" name="username" variant="outlined" fullWidth required onChange={handleChange} />
+          <TextField label="Correo" name="email" variant="outlined" fullWidth required onChange={handleChange} />
+          <TextField label="Contraseña" name="password" type="password" variant="outlined" fullWidth required onChange={handleChange} />
+          <TextField label="Número de teléfono" name="phone" variant="outlined" fullWidth required onChange={handleChange} />
           <Button variant="contained" color="primary" type="submit" fullWidth>
             Registrarse
           </Button>
