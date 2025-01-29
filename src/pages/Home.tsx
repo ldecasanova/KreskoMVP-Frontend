@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Typography, Paper, TextField } from "@mui/material";
+import { Button, Box, Typography, Paper } from "@mui/material";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
 
   return (
     <Box className="flex h-screen w-screen">
-      {/* Lado Izquierdo - Fondo con Imagen */}
+      {/* Lado Izquierdo - Imagen de fondo */}
       <Box
         className="hidden md:flex w-1/2 justify-center items-center"
         style={{
@@ -15,35 +15,40 @@ const Home: React.FC = () => {
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
+          backgroundColor: "#4A90E2", // Color de respaldo
         }}
-      >
-      </Box>
+      ></Box>
 
-      {/* Lado Derecho - Registro */}
-      <Box className="w-full md:w-1/2 flex justify-center items-center px-4 bg-gray-50">
-        <Paper className="p-8 shadow-lg w-full max-w-md">
-          <Typography variant="h4" align="center" className="mb-6">
-            Registro
+      {/* Lado Derecho - Contenido */}
+      <Box className="w-full md:w-1/2 flex justify-center items-center px-10 bg-gray-50">
+        <Paper className="p-16 shadow-2xl w-full max-w-lg text-center rounded-3xl">
+          <Typography
+            variant="h3"
+            className="mb-8 font-extrabold tracking-wide text-gray-800"
+            style={{ fontFamily: "'Poppins', sans-serif" }}
+          >
+            Kresko - <span className="text-blue-500">Gestión Financiera Inteligente</span>
           </Typography>
-          <form className="flex flex-col gap-4">
-            <TextField label="Correo" variant="outlined" fullWidth required />
-            <TextField
-              label="Contraseña"
-              type="password"
-              variant="outlined"
+          <Box className="flex flex-col gap-6">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate("/register")}
               fullWidth
-              required
-            />
-            <Button variant="contained" color="primary" fullWidth>
+              className="py-4 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+            >
               Registrarse
             </Button>
-            <Typography align="center" className="mt-4">
-              ¿Ya tienes cuenta?{" "}
-              <Button color="primary" onClick={() => navigate("/login")}>
-                Iniciar sesión
-              </Button>
-            </Typography>
-          </form>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => navigate("/login")}
+              fullWidth
+              className="py-4 text-lg font-semibold rounded-full shadow-md hover:shadow-xl transition-all duration-300 border-2"
+            >
+              Iniciar Sesión
+            </Button>
+          </Box>
         </Paper>
       </Box>
     </Box>
