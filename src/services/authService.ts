@@ -1,5 +1,6 @@
-import api from "./api";
+import api from "./api"; // Importa la configuración base de Axios
 
+// **Registro de usuario**
 export const register = async (
   username: string,
   email: string,
@@ -9,19 +10,40 @@ export const register = async (
   return api.post("/auth/register", { username, email, password, phone });
 };
 
-
+// **Confirmar código de verificación**
 export const confirmCode = async (userId: string, code: string) => {
   return api.post("/auth/confirm-code", { userId, code });
 };
 
+// **Agregar un correo bancario vinculado**
 export const addBankEmail = async (email: string, password: string) => {
-  return api.post("/auth/emails", { email, password });
+  try {
+    const response = await api.post("/bank-emails", { email, password });
+    return response.data;
+  } catch (error) {
+    console.error("Error al agregar correo bancario:", error);
+    throw error;
+  }
 };
 
+// **Listar todos los correos bancarios registrados**
 export const listBankEmails = async () => {
-  return api.get("/auth/emails");
+  try {
+    const response = await api.get("/bank-emails");
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener la lista de correos bancarios:", error);
+    throw error;
+  }
 };
 
+// **Procesar los datos bancarios asociados a los correos registrados**
 export const processBankData = async () => {
-  return api.post("/auth/process-data");
+  try {
+    const response = await api.post("/bank-emails/process-data");
+    return response.data;
+  } catch (error) {
+    console.error("Error al procesar los datos bancarios:", error);
+    throw error;
+  }
 };

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TextField, Button, Box, Typography, Paper, IconButton, Alert } from "@mui/material";
-import { AddCircleOutline } from "@mui/icons-material";
-import { addBankEmail } from "../services/authService"; // Importar servicio
+import { AddCircleOutline, DeleteOutline } from "@mui/icons-material";
+import { addBankEmail } from "../services/authService";
 
 const EmailsForm: React.FC = () => {
   const [emails, setEmails] = useState([{ email: "", password: "" }]);
@@ -10,9 +10,7 @@ const EmailsForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleAddEmail = () => {
-    setEmails([...emails, { email: "", password: "" }]);
-  };
+  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleChange = (index: number, field: keyof typeof emails[0], value: string) => {
     const updatedEmails = [...emails];
@@ -20,14 +18,21 @@ const EmailsForm: React.FC = () => {
     setEmails(updatedEmails);
   };
 
-  // Validar correo electrónico
-  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const handleAddEmail = () => {
+    setEmails([...emails, { email: "", password: "" }]);
+  };
+
+  const handleRemoveEmail = (index: number) => {
+    const updatedEmails = [...emails];
+    updatedEmails.splice(index, 1);
+    setEmails(updatedEmails);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
+  
     try {
       for (const email of emails) {
         if (!validateEmail(email.email)) {
@@ -37,19 +42,19 @@ const EmailsForm: React.FC = () => {
         }
         await addBankEmail(email.email, email.password);
       }
-      alert("Correos agregados correctamente.");
-      navigate("/loading");
+      alert("Correos bancarios registrados correctamente. Extrayendo datos...");
+      navigate("/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.error || "Error al agregar correos bancarios.");
+      setError("Error al procesar los correos. Intenta nuevamente.");
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   return (
     <Box className="flex justify-center items-center h-screen w-screen bg-gray-50 px-4">
       <Paper className="p-8 shadow-lg w-full max-w-md">
-        <Typography variant="h5" align="center" className="mb-6">
+        <Typography variant="h5" align="center" className="mb-6 font-bold">
           Vincula tus correos bancarios
         </Typography>
         {error && <Alert severity="error">{error}</Alert>}
@@ -57,7 +62,7 @@ const EmailsForm: React.FC = () => {
           {emails.map((email, index) => (
             <Box key={index} className="flex flex-col gap-2">
               <TextField
-                label="Correo vinculado al banco"
+                label="Correo bancario"
                 variant="outlined"
                 value={email.email}
                 onChange={(e) => handleChange(index, "email", e.target.value)}
@@ -73,13 +78,18 @@ const EmailsForm: React.FC = () => {
                 fullWidth
                 required
               />
+              {emails.length > 1 && (
+                <IconButton onClick={() => handleRemoveEmail(index)} color="error">
+                  <DeleteOutline />
+                </IconButton>
+              )}
             </Box>
           ))}
           <IconButton onClick={handleAddEmail} color="primary">
             <AddCircleOutline />
           </IconButton>
           <Button variant="contained" color="primary" type="submit" fullWidth disabled={loading}>
-            {loading ? "Guardando..." : "Continuar"}
+            {loading ? "Procesando..." : "Continuar"}
           </Button>
         </form>
       </Paper>
