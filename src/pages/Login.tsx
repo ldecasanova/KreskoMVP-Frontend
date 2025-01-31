@@ -1,13 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TextField, Button, Box, Typography, Paper } from "@mui/material";
+import { login } from "../services/authService"; // Importa la función de login
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/dashboard");
+    setError(null);
+    setLoading(true);
+
+    try {
+      const response = await login(formData.email, formData.password);
+      localStorage.setItem("token", (response.data as { token: string }).token); // Guardar token en localStorage
+      navigate("/dashboard"); // Redirigir al usuario tras login exitoso
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Error en el inicio de sesión.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -17,16 +36,28 @@ const Login: React.FC = () => {
           Iniciar Sesión
         </Typography>
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
-          <TextField label="Correo" variant="outlined" fullWidth required />
+          <TextField
+            label="Correo"
+            name="email"
+            variant="outlined"
+            fullWidth
+            required
+            value={formData.email}
+            onChange={handleChange}
+          />
           <TextField
             label="Contraseña"
+            name="password"
             type="password"
             variant="outlined"
             fullWidth
             required
+            value={formData.password}
+            onChange={handleChange}
           />
-          <Button variant="contained" color="primary" type="submit" fullWidth>
-            Entrar
+          {error && <Typography color="error">{error}</Typography>}
+          <Button variant="contained" color="primary" type="submit" fullWidth disabled={loading}>
+            {loading ? "Ingresando..." : "Entrar"}
           </Button>
         </form>
       </Paper>

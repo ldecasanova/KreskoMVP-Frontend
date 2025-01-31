@@ -10,6 +10,11 @@ export const register = async (
   return api.post("/auth/register", { username, email, password, phone });
 };
 
+// **Inicio de sesión**
+export const login = async (email: string, password: string) => {
+  return api.post("/auth/login", { email, password });
+};
+
 // **Confirmar código de verificación**
 export const confirmCode = async (userId: string, code: string) => {
   return api.post("/auth/confirm-code", { userId, code });
